@@ -13,9 +13,8 @@ message UserSignup {
     string Password = 3;
 }
 
-message RegisterResponse {
+message RegisterID {
     string ID = 1;
-    string message = 2;
 }
 
 message TeamMember {
@@ -23,39 +22,23 @@ message TeamMember {
     string MemberID = 2;
 }
 
-message AllUsers{
-    message UserInfo {
-        string ID = 1;
-        string Username = 2;
-    }
-    repeated UserInfo user = 1;
-}
-
-message ProjectResponse {
-    message ProjectOne {
-        string ID = 1;
-        string Title = 2;
-    }
-    repeated ProjectOne Project = 1;
-}
-
-
-message TaskRequest {
+message UserInfo {
     string ID = 1;
-    string Subject = 2;
-    string Description = 3;
-    string Status = 4;
-    int32 Priority = 5;
-    string Category = 6;
-    string DateCreated = 7;
-    string DateModified = 8;
-    string StartDate = 9;
-    string DueDate = 10;
-    string AssigneeID = 11;
-    string ProjectID = 12; 
+    string Username = 2;
+}
+message AllUsers{
+    UserInfo User = 1;
 }
 
-message TaskInfo {
+message ProjectOne {
+    string ID = 1;
+    string Title = 2;
+}
+message ProjectResponse {
+    ProjectOne Project = 1;
+}
+
+message TaskModel {
     string ID = 1;
     string Subject = 2;
     string Description = 3;
@@ -67,43 +50,36 @@ message TaskInfo {
     string StartDate = 9;
     string DueDate = 10;
     string ProjectID = 11; 
-    message AssigneeInfo {
-        string ID = 1;
-        string Username = 2;
+    oneof Assignee {
+        UserInfo AssigneeObj = 12;
+        string AssigneeID = 13;
     }
-    AssigneeInfo Assignee = 12;
 }
 
 message AllTaskInfo { 
-    repeated TaskInfo Task = 1;
+    TaskModel Task = 1;
 }
 
 message TaskResponse {
     bool Ok = 1;
-    string Message = 2;
 }
 
 message StatusResponse {
-    message StatusInfo {
-        string ID = 1;
-        int64 Count = 2;
-    }
-    repeated StatusInfo Status = 1;
+    map<string, int32> Status = 1;
 }
 
-message Empty {
-    string ID = 1;
-}
+
+message Empty {}
 
 service TaskerApp {
-    rpc Login (UserLogin) returns (RegisterResponse);
-    rpc Signup (UserSignup) returns (RegisterResponse);
-    rpc GetUsers (Empty) returns (AllUsers);
-    rpc GetTeamMembers (Empty) returns (AllUsers);
-    rpc AddTask (TaskRequest) returns (TaskResponse);
-    rpc UpdateTask (TaskRequest) returns (TaskResponse);
-    rpc GetAllTasks (Empty) returns (AllTaskInfo);
-    rpc GetAllProjects (Empty) returns (ProjectResponse);
-    rpc GetStatusCount (Empty) returns (StatusResponse);
+    rpc Login (UserLogin) returns (RegisterID);
+    rpc Signup (UserSignup) returns (RegisterID);
+    rpc GetUsers (Empty) returns (stream AllUsers);
+    rpc GetTeamMembers (RegisterID) returns (stream AllUsers);
+    rpc AddTask (TaskModel) returns (TaskResponse);
+    rpc UpdateTask (TaskModel) returns (TaskResponse);
+    rpc GetAllTasks (Empty) returns (stream AllTaskInfo);
+    rpc GetAllProjects (Empty) returns (stream ProjectResponse);
+    rpc GetStatusCount (RegisterID) returns (stream StatusResponse);
     rpc UpdateTaskStatus (Empty) returns (Empty);
 }
