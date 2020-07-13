@@ -1,0 +1,109 @@
+syntax = "proto3";
+
+package protos;
+
+message UserLogin {
+    string Email = 1;
+    string Password = 2;
+}
+
+message UserSignup {
+    string Username = 1;
+    string Email = 2;
+    string Password = 3;
+}
+
+message RegisterResponse {
+    string ID = 1;
+    string message = 2;
+}
+
+message TeamMember {
+    string LeaderID = 1;
+    string MemberID = 2;
+}
+
+message AllUsers{
+    message UserInfo {
+        string ID = 1;
+        string Username = 2;
+    }
+    repeated UserInfo user = 1;
+}
+
+message ProjectResponse {
+    message ProjectOne {
+        string ID = 1;
+        string Title = 2;
+    }
+    repeated ProjectOne Project = 1;
+}
+
+
+message TaskRequest {
+    string ID = 1;
+    string Subject = 2;
+    string Description = 3;
+    string Status = 4;
+    int32 Priority = 5;
+    string Category = 6;
+    string DateCreated = 7;
+    string DateModified = 8;
+    string StartDate = 9;
+    string DueDate = 10;
+    string AssigneeID = 11;
+    string ProjectID = 12; 
+}
+
+message TaskInfo {
+    string ID = 1;
+    string Subject = 2;
+    string Description = 3;
+    string Status = 4;
+    int32 Priority = 5;
+    string Category = 6;
+    string DateCreated = 7;
+    string DateModified = 8;
+    string StartDate = 9;
+    string DueDate = 10;
+    string ProjectID = 11; 
+    message AssigneeInfo {
+        string ID = 1;
+        string Username = 2;
+    }
+    AssigneeInfo Assignee = 12;
+}
+
+message AllTaskInfo { 
+    repeated TaskInfo Task = 1;
+}
+
+message TaskResponse {
+    bool Ok = 1;
+    string Message = 2;
+}
+
+message StatusResponse {
+    message StatusInfo {
+        string ID = 1;
+        int64 Count = 2;
+    }
+    repeated StatusInfo Status = 1;
+}
+
+message Empty {
+    string ID = 1;
+}
+
+service TaskerApp {
+    rpc Login (UserLogin) returns (RegisterResponse);
+    rpc Signup (UserSignup) returns (RegisterResponse);
+    rpc GetUsers (Empty) returns (AllUsers);
+    rpc GetTeamMembers (Empty) returns (AllUsers);
+    rpc AddTask (TaskRequest) returns (TaskResponse);
+    rpc UpdateTask (TaskRequest) returns (TaskResponse);
+    rpc GetAllTasks (Empty) returns (AllTaskInfo);
+    rpc GetAllProjects (Empty) returns (ProjectResponse);
+    rpc GetStatusCount (Empty) returns (StatusResponse);
+    rpc UpdateTaskStatus (Empty) returns (Empty);
+}
